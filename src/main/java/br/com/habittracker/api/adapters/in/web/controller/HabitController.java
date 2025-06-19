@@ -5,24 +5,32 @@ import br.com.habittracker.api.adapters.in.web.dto.HabitResponseDTO;
 import br.com.habittracker.api.adapters.in.web.mapper.HabitDtoMapper;
 import br.com.habittracker.api.domain.model.Habit;
 import br.com.habittracker.api.domain.port.in.CreateHabitUseCase;
+import br.com.habittracker.api.domain.port.in.FindHabitByIdUseCase;
+import br.com.habittracker.api.domain.port.in.FindAllHabitsUseCase;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/v1/habits")
 public class HabitController {
     private final CreateHabitUseCase createHabitUseCase;
+    private final FindHabitByIdUseCase findHabitByIdUseCase;
+    private final FindAllHabitsUseCase findAllHabitsUseCase;
     private final HabitDtoMapper mapper;
 
-    public HabitController(CreateHabitUseCase createHabitUseCase, HabitDtoMapper mapper) {
+    public HabitController(CreateHabitUseCase createHabitUseCase,
+                            FindAllHabitsUseCase findAllHabitsUseCase,
+                            FindHabitByIdUseCase findHabitByIdUseCase,
+                           HabitDtoMapper mapper) {
         this.createHabitUseCase = createHabitUseCase;
+        this.findHabitByIdUseCase = findHabitByIdUseCase;
+        this.findAllHabitsUseCase = findAllHabitsUseCase;
         this.mapper = mapper;
     }
 
@@ -38,5 +46,21 @@ public class HabitController {
                 .toUri();
 
         return ResponseEntity.created(location).body(response);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<HabitResponseDTO> findHabitById(@PathVariable Long id) {
+        return findHabitByIdUseCase.findById(id)
+                .map(mapper::toResponse)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
+
+    @GetMapping
+    public ResponseEntity<List<HabitResponseDTO>> findAllHabits() {
+        List<HabitResponseDTO> response = findAllHabitsUseCase.findAll().stream()
+                .map(mapper::toResponse)
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(response);
     }
 }
