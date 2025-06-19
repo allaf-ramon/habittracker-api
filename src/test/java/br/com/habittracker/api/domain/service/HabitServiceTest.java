@@ -9,6 +9,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDate;
+import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -60,4 +62,33 @@ class HabitServiceTest {
 
         assertEquals("O nome do hábito não pode ser vazio.", exception.getMessage());
     }
+
+    @Test
+    void whenFindById_thenReturnsHabitOptional() {
+        // Arrange
+        Habit habit = new Habit(1L, "Read book", "description", LocalDate.now());
+        when(habitRepositoryPort.findById(1L)).thenReturn(Optional.of(habit));
+
+        // Act
+        Optional<Habit> foundHabit = habitService.findById(1L);
+
+        // Assert
+        assertTrue(foundHabit.isPresent());
+        assertEquals(1L, foundHabit.get().getId());
+    }
+
+    @Test
+    void whenFindAll_thenReturnsHabitList() {
+        // Arrange
+        List<Habit> habits = List.of(new Habit(1L, "Habit 1", "d1", LocalDate.now()));
+        when(habitRepositoryPort.findAll()).thenReturn(habits);
+
+        // Act
+        List<Habit> foundHabits = habitService.findAll();
+
+        // Assert
+        assertFalse(foundHabits.isEmpty());
+        assertEquals(1, foundHabits.size());
+    }
+
 }
