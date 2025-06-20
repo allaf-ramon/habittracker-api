@@ -4,6 +4,7 @@ import br.com.habittracker.api.domain.model.Habit;
 import br.com.habittracker.api.domain.port.in.CreateHabitUseCase;
 import br.com.habittracker.api.domain.port.in.FindAllHabitsUseCase;
 import br.com.habittracker.api.domain.port.in.FindHabitByIdUseCase;
+import br.com.habittracker.api.domain.port.in.UpdateHabitUseCase;
 import br.com.habittracker.api.domain.port.out.HabitRepositoryPort;
 
 import java.time.LocalDate;
@@ -15,7 +16,7 @@ import java.util.Optional;
  * Esta é a classe de serviço principal do nosso domínio.
  */
 public class HabitService
-        implements CreateHabitUseCase, FindHabitByIdUseCase, FindAllHabitsUseCase {
+        implements CreateHabitUseCase, FindHabitByIdUseCase, FindAllHabitsUseCase, UpdateHabitUseCase {
     private final HabitRepositoryPort habitRepositoryPort;
 
     // A implementação do repositório será injetada aqui (veremos isso depois)
@@ -45,5 +46,23 @@ public class HabitService
     @Override
     public List<Habit> findAll() {
         return habitRepositoryPort.findAll();
+    }
+
+    @Override
+    public Optional<Habit> updateHabit(Long id, Habit habitToUpdate) {
+        // Regra de negócio: garantir que o nome não seja nulo ou vazio
+        if (habitToUpdate.getName() == null || habitToUpdate.getName().isBlank()) {
+            throw new IllegalArgumentException("O nome do hábito não pode ser vazio.");
+        }
+
+        return habitRepositoryPort.findById(id)
+                .map(existingHabit -> {
+                    // Atualiza os campos do hábito existente
+                    existingHabit.setName(habitToUpdate.getName());
+                    existingHabit.setDescription(habitToUpdate.getDescription());
+
+                    // Salva o hábito atualizado usando a mesma porta 'save'
+                    return habitRepositoryPort.save(existingHabit);
+                });
     }
 }

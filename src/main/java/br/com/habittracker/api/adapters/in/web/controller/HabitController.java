@@ -7,6 +7,7 @@ import br.com.habittracker.api.domain.model.Habit;
 import br.com.habittracker.api.domain.port.in.CreateHabitUseCase;
 import br.com.habittracker.api.domain.port.in.FindHabitByIdUseCase;
 import br.com.habittracker.api.domain.port.in.FindAllHabitsUseCase;
+import br.com.habittracker.api.domain.port.in.UpdateHabitUseCase;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -22,15 +23,18 @@ public class HabitController {
     private final CreateHabitUseCase createHabitUseCase;
     private final FindHabitByIdUseCase findHabitByIdUseCase;
     private final FindAllHabitsUseCase findAllHabitsUseCase;
+    private final UpdateHabitUseCase updateHabitUseCase;
     private final HabitDtoMapper mapper;
 
     public HabitController(CreateHabitUseCase createHabitUseCase,
                             FindAllHabitsUseCase findAllHabitsUseCase,
                             FindHabitByIdUseCase findHabitByIdUseCase,
+                            UpdateHabitUseCase updateHabitUseCase,
                            HabitDtoMapper mapper) {
         this.createHabitUseCase = createHabitUseCase;
         this.findHabitByIdUseCase = findHabitByIdUseCase;
         this.findAllHabitsUseCase = findAllHabitsUseCase;
+        this.updateHabitUseCase = updateHabitUseCase;
         this.mapper = mapper;
     }
 
@@ -62,5 +66,16 @@ public class HabitController {
                 .map(mapper::toResponse)
                 .collect(Collectors.toList());
         return ResponseEntity.ok(response);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<HabitResponseDTO> updateHabit(
+            @PathVariable Long id, @Valid @RequestBody HabitRequestDTO request) {
+        Habit habitDomain = mapper.toDomain(request);
+
+        return updateHabitUseCase.updateHabit(id, habitDomain)
+                .map(mapper::toResponse)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
 }
