@@ -4,10 +4,7 @@ import br.com.habittracker.api.adapters.in.web.dto.HabitRequestDTO;
 import br.com.habittracker.api.adapters.in.web.dto.HabitResponseDTO;
 import br.com.habittracker.api.adapters.in.web.mapper.HabitDtoMapper;
 import br.com.habittracker.api.domain.model.Habit;
-import br.com.habittracker.api.domain.port.in.CreateHabitUseCase;
-import br.com.habittracker.api.domain.port.in.FindHabitByIdUseCase;
-import br.com.habittracker.api.domain.port.in.FindAllHabitsUseCase;
-import br.com.habittracker.api.domain.port.in.UpdateHabitUseCase;
+import br.com.habittracker.api.domain.port.in.*;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -24,17 +21,20 @@ public class HabitController {
     private final FindHabitByIdUseCase findHabitByIdUseCase;
     private final FindAllHabitsUseCase findAllHabitsUseCase;
     private final UpdateHabitUseCase updateHabitUseCase;
+    private final DeleteHabitUseCase deleteHabitUseCase;
     private final HabitDtoMapper mapper;
 
     public HabitController(CreateHabitUseCase createHabitUseCase,
                             FindAllHabitsUseCase findAllHabitsUseCase,
                             FindHabitByIdUseCase findHabitByIdUseCase,
                             UpdateHabitUseCase updateHabitUseCase,
+                            DeleteHabitUseCase deleteHabitUseCase,
                            HabitDtoMapper mapper) {
         this.createHabitUseCase = createHabitUseCase;
         this.findHabitByIdUseCase = findHabitByIdUseCase;
         this.findAllHabitsUseCase = findAllHabitsUseCase;
         this.updateHabitUseCase = updateHabitUseCase;
+        this.deleteHabitUseCase = deleteHabitUseCase;
         this.mapper = mapper;
     }
 
@@ -77,5 +77,15 @@ public class HabitController {
                 .map(mapper::toResponse)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteHabit(@PathVariable Long id) {
+        boolean deleted = deleteHabitUseCase.deleteHabit(id);
+        if (deleted) {
+            return ResponseEntity.noContent().build(); // 204 No Content
+        } else {
+            return ResponseEntity.notFound().build(); // 404 Not Found
+        }
     }
 }

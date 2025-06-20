@@ -20,5 +20,5 @@ public interface HabitRepositoryPort {
     Habit save(Habit habit);
     Optional<Habit> findById(Long id);
     List<Habit> findAll();
-    // void deleteById(Long id);
+    void deleteById(Long id);
 }

@@ -1,10 +1,7 @@
 package br.com.habittracker.api.domain.service;
 
 import br.com.habittracker.api.domain.model.Habit;
-import br.com.habittracker.api.domain.port.in.CreateHabitUseCase;
-import br.com.habittracker.api.domain.port.in.FindAllHabitsUseCase;
-import br.com.habittracker.api.domain.port.in.FindHabitByIdUseCase;
-import br.com.habittracker.api.domain.port.in.UpdateHabitUseCase;
+import br.com.habittracker.api.domain.port.in.*;
 import br.com.habittracker.api.domain.port.out.HabitRepositoryPort;
 
 import java.time.LocalDate;
@@ -16,7 +13,8 @@ import java.util.Optional;
  * Esta é a classe de serviço principal do nosso domínio.
  */
 public class HabitService
-        implements CreateHabitUseCase, FindHabitByIdUseCase, FindAllHabitsUseCase, UpdateHabitUseCase {
+        implements CreateHabitUseCase, FindHabitByIdUseCase, FindAllHabitsUseCase,
+        UpdateHabitUseCase, DeleteHabitUseCase {
     private final HabitRepositoryPort habitRepositoryPort;
 
     // A implementação do repositório será injetada aqui (veremos isso depois)
@@ -64,5 +62,15 @@ public class HabitService
                     // Salva o hábito atualizado usando a mesma porta 'save'
                     return habitRepositoryPort.save(existingHabit);
                 });
+    }
+
+    @Override
+    public boolean deleteHabit(Long id) {
+        // Verifica se o hábito existe
+        if (habitRepositoryPort.findById(id).isPresent()) {
+            habitRepositoryPort.deleteById(id);
+            return true; // Sucesso
+        }
+        return false; // Hábito não encontrado
     }
 }
