@@ -5,6 +5,7 @@ import br.com.habittracker.api.domain.model.Habit;
 import br.com.habittracker.api.domain.port.in.CreateHabitUseCase;
 import br.com.habittracker.api.domain.port.in.FindAllHabitsUseCase;
 import br.com.habittracker.api.domain.port.in.FindHabitByIdUseCase;
+import br.com.habittracker.api.domain.port.in.UpdateHabitUseCase;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,6 +40,9 @@ class HabitControllerTest {
 
     @MockBean
     private FindAllHabitsUseCase findAllHabitsUseCase;
+
+    @MockBean
+    private UpdateHabitUseCase updateHabitUseCase;
 
 
     @Test
@@ -105,5 +109,37 @@ class HabitControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].id").value(1))
                 .andExpect(jsonPath("$[0].name").value("Hábito 1"));
+    }
+
+    @Test
+    void whenPutValidHabit_thenReturns200Ok() throws Exception {
+        // Arrange
+        String requestJson = "{\"name\":\"Nome Atualizado\",\"description\":\"Desc Atualizada\"}";
+        Habit updatedHabit = new Habit(1L, "Nome Atualizado", "Desc Atualizada", LocalDate.now());
+
+        when(updateHabitUseCase.updateHabit(any(Long.class), any(Habit.class)))
+                .thenReturn(Optional.of(updatedHabit));
+
+        // Act & Assert
+        mockMvc.perform(put("/v1/habits/1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestJson))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(1))
+                .andExpect(jsonPath("$.name").value("Nome Atualizado"));
+    }
+
+    @Test
+    void whenPutNonExistingHabit_thenReturns404NotFound() throws Exception {
+        // Arrange
+        String requestJson = "{\"name\":\"Nome Atualizado\",\"description\":\"Desc Atualizada\"}";
+        when(updateHabitUseCase.updateHabit(any(Long.class), any(Habit.class)))
+                .thenReturn(Optional.empty());
+
+        // Act & Assert
+        mockMvc.perform(put("/v1/habits/99")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestJson))
+                .andExpect(status().isNotFound());
     }
 }

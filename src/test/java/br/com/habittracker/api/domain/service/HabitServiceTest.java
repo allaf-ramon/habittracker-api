@@ -91,4 +91,39 @@ class HabitServiceTest {
         assertEquals(1, foundHabits.size());
     }
 
+    @Test
+    void givenExistingHabit_whenUpdateHabit_thenSavesAndReturnsUpdatedHabit() {
+        // Arrange
+        Habit existingHabit = new Habit(1L, "Old Name", "Old Desc", LocalDate.now());
+        Habit habitWithNewData = new Habit();
+        habitWithNewData.setName("New Name");
+        habitWithNewData.setDescription("New Desc");
+
+        when(habitRepositoryPort.findById(1L)).thenReturn(Optional.of(existingHabit));
+        when(habitRepositoryPort.save(any(Habit.class))).thenAnswer(inv -> inv.getArgument(0));
+
+        // Act
+        Optional<Habit> updatedHabitOpt = habitService.updateHabit(1L, habitWithNewData);
+
+        // Assert
+        assertTrue(updatedHabitOpt.isPresent());
+        Habit updatedHabit = updatedHabitOpt.get();
+        assertEquals("New Name", updatedHabit.getName());
+        assertEquals("New Desc", updatedHabit.getDescription());
+        verify(habitRepositoryPort).save(existingHabit);
+    }
+
+    @Test
+    void givenNonExistingHabit_whenUpdateHabit_thenReturnsEmptyOptional() {
+        // Arrange
+        Habit habitWithNewData = new Habit();
+        habitWithNewData.setName("New Name");
+        when(habitRepositoryPort.findById(99L)).thenReturn(Optional.empty());
+
+        // Act
+        Optional<Habit> updatedHabitOpt = habitService.updateHabit(99L, habitWithNewData);
+
+        // Assert
+        assertTrue(updatedHabitOpt.isEmpty());
+    }
 }
