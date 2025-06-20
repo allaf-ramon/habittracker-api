@@ -14,8 +14,7 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class HabitServiceTest {
@@ -125,5 +124,32 @@ class HabitServiceTest {
 
         // Assert
         assertTrue(updatedHabitOpt.isEmpty());
+    }
+
+    @Test
+    void givenExistingHabit_whenDeleteHabit_thenReturnsTrue() {
+        // Arrange
+        Habit habit = new Habit(1L, "Habit to delete", "d", LocalDate.now());
+        when(habitRepositoryPort.findById(1L)).thenReturn(Optional.of(habit));
+
+        // Act
+        boolean result = habitService.deleteHabit(1L);
+
+        // Assert
+        assertTrue(result);
+        verify(habitRepositoryPort).deleteById(1L); // Verifica se a exclusão foi chamada
+    }
+
+    @Test
+    void givenNonExistingHabit_whenDeleteHabit_thenReturnsFalse() {
+        // Arrange
+        when(habitRepositoryPort.findById(99L)).thenReturn(Optional.empty());
+
+        // Act
+        boolean result = habitService.deleteHabit(99L);
+
+        // Assert
+        assertFalse(result);
+        verify(habitRepositoryPort, never()).deleteById(99L); // Verifica que a exclusão NÃO foi chamada
     }
 }

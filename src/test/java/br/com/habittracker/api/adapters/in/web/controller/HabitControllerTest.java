@@ -2,10 +2,7 @@ package br.com.habittracker.api.adapters.in.web.controller;
 
 import br.com.habittracker.api.adapters.in.web.mapper.HabitDtoMapper;
 import br.com.habittracker.api.domain.model.Habit;
-import br.com.habittracker.api.domain.port.in.CreateHabitUseCase;
-import br.com.habittracker.api.domain.port.in.FindAllHabitsUseCase;
-import br.com.habittracker.api.domain.port.in.FindHabitByIdUseCase;
-import br.com.habittracker.api.domain.port.in.UpdateHabitUseCase;
+import br.com.habittracker.api.domain.port.in.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,6 +40,9 @@ class HabitControllerTest {
 
     @MockBean
     private UpdateHabitUseCase updateHabitUseCase;
+
+    @MockBean
+    private DeleteHabitUseCase deleteHabitUseCase;
 
 
     @Test
@@ -140,6 +140,26 @@ class HabitControllerTest {
         mockMvc.perform(put("/v1/habits/99")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(requestJson))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void whenDeleteExistingHabit_thenReturns204NoContent() throws Exception {
+        // Arrange
+        when(deleteHabitUseCase.deleteHabit(1L)).thenReturn(true);
+
+        // Act & Assert
+        mockMvc.perform(delete("/v1/habits/1"))
+                .andExpect(status().isNoContent());
+    }
+
+    @Test
+    void whenDeleteNonExistingHabit_thenReturns404NotFound() throws Exception {
+        // Arrange
+        when(deleteHabitUseCase.deleteHabit(99L)).thenReturn(false);
+
+        // Act & Assert
+        mockMvc.perform(delete("/v1/habits/99"))
                 .andExpect(status().isNotFound());
     }
 }
