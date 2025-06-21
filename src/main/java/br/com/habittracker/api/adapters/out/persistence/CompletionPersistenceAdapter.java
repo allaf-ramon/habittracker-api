@@ -8,7 +8,9 @@ import br.com.habittracker.api.domain.port.out.CompletionRepositoryPort;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Component
 public class CompletionPersistenceAdapter implements CompletionRepositoryPort {
@@ -36,5 +38,13 @@ public class CompletionPersistenceAdapter implements CompletionRepositoryPort {
     public Optional<Completion> findByHabitIdAndDate(Long habitId, LocalDate date) {
         return completionJpaRepository.findByHabitIdAndCompletionDate(habitId, date)
                 .map(mapper::toDomain);
+    }
+
+    @Override
+    public List<Completion> findByHabitIdOrderByCompletionDateDesc(Long habitId) {
+        return completionJpaRepository.findByHabitIdOrderByCompletionDateDesc(habitId)
+                .stream()
+                .map(mapper::toDomain)
+                .collect(Collectors.toList());
     }
 }

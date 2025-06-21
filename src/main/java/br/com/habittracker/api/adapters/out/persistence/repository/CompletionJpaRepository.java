@@ -6,6 +6,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -14,4 +15,6 @@ public interface CompletionJpaRepository extends JpaRepository<CompletionEntity,
 
     @Transactional // Necessário para operações de delete customizadas
     void deleteByHabitIdAndCompletionDate(Long habitId, LocalDate date);
+
+    List<CompletionEntity> findByHabitIdOrderByCompletionDateDesc(Long habitId);
 }
