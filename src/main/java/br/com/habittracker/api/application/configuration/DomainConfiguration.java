@@ -4,6 +4,7 @@ import br.com.habittracker.api.domain.port.out.CompletionRepositoryPort;
 import br.com.habittracker.api.domain.port.out.HabitRepositoryPort;
 import br.com.habittracker.api.domain.service.CompletionService;
 import br.com.habittracker.api.domain.service.HabitService;
+import br.com.habittracker.api.domain.service.StatsService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -17,5 +18,10 @@ public class DomainConfiguration {
     public CompletionService completionService(CompletionRepositoryPort completionRepositoryPort,
                                                HabitRepositoryPort habitRepositoryPort) {
         return new CompletionService(completionRepositoryPort, habitRepositoryPort);
+    }
+
+    @Bean
+    public StatsService statsService(CompletionRepositoryPort completionRepositoryPort, HabitRepositoryPort habitRepositoryPort) {
+        return new StatsService(completionRepositoryPort, habitRepositoryPort);
     }
 }
