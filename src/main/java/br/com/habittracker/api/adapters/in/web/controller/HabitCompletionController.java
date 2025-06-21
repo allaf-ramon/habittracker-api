@@ -17,8 +17,12 @@ public class HabitCompletionController {
 
     @PostMapping("/{date}")
     public ResponseEntity<Void> markAsCompleted(@PathVariable Long habitId, @PathVariable LocalDate date) {
-        markCompletionUseCase.markAsCompleted(habitId, date);
-        return ResponseEntity.ok().build();
+        try {
+            markCompletionUseCase.markAsCompleted(habitId, date);
+            return ResponseEntity.ok().build();
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().build();
+        }
     }
 
     @DeleteMapping("/{date}")
