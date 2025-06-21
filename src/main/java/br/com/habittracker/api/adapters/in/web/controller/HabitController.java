@@ -2,8 +2,10 @@ package br.com.habittracker.api.adapters.in.web.controller;
 
 import br.com.habittracker.api.adapters.in.web.dto.HabitRequestDTO;
 import br.com.habittracker.api.adapters.in.web.dto.HabitResponseDTO;
+import br.com.habittracker.api.adapters.in.web.dto.HabitStatsResponseDTO;
 import br.com.habittracker.api.adapters.in.web.mapper.HabitDtoMapper;
 import br.com.habittracker.api.domain.model.Habit;
+import br.com.habittracker.api.domain.model.HabitStats;
 import br.com.habittracker.api.domain.port.in.*;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
@@ -22,6 +24,7 @@ public class HabitController {
     private final FindAllHabitsUseCase findAllHabitsUseCase;
     private final UpdateHabitUseCase updateHabitUseCase;
     private final DeleteHabitUseCase deleteHabitUseCase;
+    private final GetHabitStatsUseCase getHabitStatsUseCase;
     private final HabitDtoMapper mapper;
 
     public HabitController(CreateHabitUseCase createHabitUseCase,
@@ -29,12 +32,14 @@ public class HabitController {
                             FindHabitByIdUseCase findHabitByIdUseCase,
                             UpdateHabitUseCase updateHabitUseCase,
                             DeleteHabitUseCase deleteHabitUseCase,
+                            GetHabitStatsUseCase getHabitStatsUseCase,
                            HabitDtoMapper mapper) {
         this.createHabitUseCase = createHabitUseCase;
         this.findHabitByIdUseCase = findHabitByIdUseCase;
         this.findAllHabitsUseCase = findAllHabitsUseCase;
         this.updateHabitUseCase = updateHabitUseCase;
         this.deleteHabitUseCase = deleteHabitUseCase;
+        this.getHabitStatsUseCase = getHabitStatsUseCase;
         this.mapper = mapper;
     }
 
@@ -87,5 +92,16 @@ public class HabitController {
         } else {
             return ResponseEntity.notFound().build(); // 404 Not Found
         }
+    }
+
+    @GetMapping("/{id}/stats")
+    public ResponseEntity<HabitStatsResponseDTO> getHabitStats(@PathVariable Long id) {
+        HabitStats stats = getHabitStatsUseCase.getStats(id);
+        
+        // Simples mapeamento manual por enquanto
+        HabitStatsResponseDTO response = new HabitStatsResponseDTO();
+        response.setCurrentStreak(stats.getCurrentStreak());
+
+        return ResponseEntity.ok(response);
     }
 }
