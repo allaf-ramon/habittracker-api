@@ -23,9 +23,9 @@ public class CompletionService implements MarkCompletionUseCase {
                 .orElseThrow(() -> new IllegalArgumentException("Hábito não encontrado."));
 
         // Regra: Não marcar como concluído se já estiver marcado.
-        completionRepositoryPort.findByHabitIdAndDate(habitId, date).ifPresent(c -> {
+        if (completionRepositoryPort.findByHabitIdAndDate(habitId, date).isPresent()) {
             return; // Já existe, não faz nada.
-        });
+        }
 
         Completion completion = new Completion(null, habitId, date);
         completionRepositoryPort.save(completion);
