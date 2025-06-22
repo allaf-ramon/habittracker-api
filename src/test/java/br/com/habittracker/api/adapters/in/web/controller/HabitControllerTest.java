@@ -44,6 +44,9 @@ class HabitControllerTest {
     @MockBean
     private DeleteHabitUseCase deleteHabitUseCase;
 
+    @MockBean
+    private GetHabitStatsUseCase getHabitStatsUseCase;
+
 
     @Test
     void whenPostValidHabit_thenReturns201Created() throws Exception {
@@ -161,5 +164,16 @@ class HabitControllerTest {
         // Act & Assert
         mockMvc.perform(delete("/v1/habits/99"))
                 .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void whenGetStatsForExistingHabit_thenReturns200Ok() throws Exception {
+        // Arrange
+        when(getHabitStatsUseCase.getStats(1L)).thenReturn(new br.com.habittracker.api.domain.model.HabitStats(5));
+
+        // Act & Assert
+        mockMvc.perform(get("/v1/habits/1/stats"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.currentStreak").value(5));
     }
 }
