@@ -1,21 +1,22 @@
 # Define a versão do docker-compose a ser utilizada. '3.8' é uma versão estável e recomendada.
 version: "3.8"
+name: habit-tracker
 
 # Define os serviços (contêineres) que compõem sua aplicação.
 services:
   # O nome do serviço. Pode ser qualquer nome, aqui usei 'habit-postgres' para manter a consistência.
-  habit-postgres:
+  habittracker-postgres:
     # A imagem Docker a ser usada para criar o contêiner.
     image: postgres:16-alpine
 
     # O nome do contêiner.
-    container_name: habit-postgres
+    container_name: habittracker-postgres
 
     # Define as variáveis de ambiente.
     environment:
       POSTGRES_DB: habittracker_db
-      POSTGRES_USER: user
-      POSTGRES_PASSWORD: password
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
 
     # Mapeia as portas entre o host e o contêiner.
     # O formato é "HOST:CONTAINER"
