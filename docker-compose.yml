@@ -1,5 +1,5 @@
 # Define a versão do docker-compose a ser utilizada. '3.8' é uma versão estável e recomendada.
-version: '3.8'
+version: "3.8"
 
 # Define os serviços (contêineres) que compõem sua aplicação.
 services:
@@ -22,6 +22,14 @@ services:
     ports:
       - "5432:5432"
 
+    # Adiciona um volume para persistir os dados do banco de dados.
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
     # Uma política de reinicialização. 'unless-stopped' garante que o contêiner inicie
     # com o Docker, a menos que tenha sido parado manualmente. É uma boa prática para bancos de dados.
     restart: unless-stopped
+
+# Define os volumes que podem ser referenciados pelos serviços.
+volumes:
+  postgres_data:
