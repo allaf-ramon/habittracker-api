@@ -8,27 +8,40 @@ services:
   habittracker-postgres:
     # A imagem Docker a ser usada para criar o contêiner.
     image: postgres:16-alpine
-
     # O nome do contêiner.
     container_name: habittracker-postgres
-
     # Define as variáveis de ambiente.
     environment:
       POSTGRES_DB: habittracker_db
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
-
     # Mapeia as portas entre o host e o contêiner.
     # O formato é "HOST:CONTAINER"
     ports:
       - "5432:5432"
-
     # Adiciona um volume para persistir os dados do banco de dados.
     volumes:
       - postgres_data:/var/lib/postgresql/data
-
     # Uma política de reinicialização. 'unless-stopped' garante que o contêiner inicie
     # com o Docker, a menos que tenha sido parado manualmente. É uma boa prática para bancos de dados.
+    restart: unless-stopped
+
+  habittracker-api:
+    # Constrói a imagem a partir do Dockerfile no diretório atual.
+    build: .
+    container_name: habittracker-api
+    # Define que este serviço depende do serviço do banco de dados.
+    # A API só iniciará depois que o banco de dados estiver pronto.
+    depends_on:
+      - habittracker-postgres
+    ports:
+      - "8080:8080"
+    # Essas variáveis são usadas para configurar a conexão com o banco de dados.
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://habittracker-postgres:5432/habittracker_db
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=postgres
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
     restart: unless-stopped
 
 # Define os volumes que podem ser referenciados pelos serviços.
