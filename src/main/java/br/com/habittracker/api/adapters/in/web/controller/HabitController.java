@@ -14,6 +14,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @RestController
@@ -25,6 +26,7 @@ public class HabitController {
     private final UpdateHabitUseCase updateHabitUseCase;
     private final DeleteHabitUseCase deleteHabitUseCase;
     private final GetHabitStatsUseCase getHabitStatsUseCase;
+    private final FindAllHabitsWithTodayStatusUseCase findAllHabitsWithTodayStatusUseCase;
     private final HabitDtoMapper mapper;
 
     public HabitController(CreateHabitUseCase createHabitUseCase,
@@ -33,6 +35,7 @@ public class HabitController {
                             UpdateHabitUseCase updateHabitUseCase,
                             DeleteHabitUseCase deleteHabitUseCase,
                             GetHabitStatsUseCase getHabitStatsUseCase,
+                            FindAllHabitsWithTodayStatusUseCase findAllHabitsWithTodayStatusUseCase,
                            HabitDtoMapper mapper) {
         this.createHabitUseCase = createHabitUseCase;
         this.findHabitByIdUseCase = findHabitByIdUseCase;
@@ -40,6 +43,7 @@ public class HabitController {
         this.updateHabitUseCase = updateHabitUseCase;
         this.deleteHabitUseCase = deleteHabitUseCase;
         this.getHabitStatsUseCase = getHabitStatsUseCase;
+        this.findAllHabitsWithTodayStatusUseCase = findAllHabitsWithTodayStatusUseCase;
         this.mapper = mapper;
     }
 
@@ -67,9 +71,21 @@ public class HabitController {
 
     @GetMapping
     public ResponseEntity<List<HabitResponseDTO>> findAllHabits() {
-        List<HabitResponseDTO> response = findAllHabitsUseCase.findAll().stream()
-                .map(mapper::toResponse)
+        // 1. Chama o novo caso de uso que já retorna a lógica pronta
+        Map<Habit, Boolean> habitsWithStatus = findAllHabitsWithTodayStatusUseCase.findAllWithTodayStatus();
+
+        // 2. Mapeia o resultado para o DTO de resposta
+        List<HabitResponseDTO> response = habitsWithStatus.entrySet().stream()
+                .map(entry -> {
+                    Habit habit = entry.getKey();
+                    boolean isCompleted = entry.getValue();
+
+                    HabitResponseDTO dto = mapper.toResponse(habit);
+                    dto.setCompletedToday(isCompleted);
+                    return dto;
+                })
                 .collect(Collectors.toList());
+
         return ResponseEntity.ok(response);
     }
 
