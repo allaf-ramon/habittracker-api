@@ -47,4 +47,12 @@ public class CompletionPersistenceAdapter implements CompletionRepositoryPort {
                 .map(mapper::toDomain)
                 .collect(Collectors.toList());
     }
+
+    @Override
+    public List<Completion> findByCompletionDate(LocalDate date) {
+        return completionJpaRepository.findByCompletionDate(date)
+                .stream()
+                .map(mapper::toDomain)
+                .collect(Collectors.toList());
+    }
 }
