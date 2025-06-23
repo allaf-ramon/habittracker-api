@@ -7,6 +7,7 @@ public class HabitResponseDTO {
     private String name;
     private String description;
     private LocalDate creationDate;
+    private boolean completedToday;
 
     // Getters e Setters
     public Long getId() {
@@ -39,5 +40,13 @@ public class HabitResponseDTO {
 
     public void setCreationDate(LocalDate creationDate) {
         this.creationDate = creationDate;
+    }
+
+    public boolean isCompletedToday() {
+        return completedToday;
+    }
+
+    public void setCompletedToday(boolean completedToday) {
+        this.completedToday = completedToday;
     }
 }
