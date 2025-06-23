@@ -16,5 +16,6 @@ public interface CompletionJpaRepository extends JpaRepository<CompletionEntity,
     @Transactional // Necessário para operações de delete customizadas
     void deleteByHabitIdAndCompletionDate(Long habitId, LocalDate date);
 
+    List<CompletionEntity> findByCompletionDate(LocalDate completionDate);
     List<CompletionEntity> findByHabitIdOrderByCompletionDateDesc(Long habitId);
 }

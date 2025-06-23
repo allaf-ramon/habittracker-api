@@ -10,6 +10,6 @@ public interface CompletionRepositoryPort {
     void save(Completion completion);
     void delete(Long habitId, LocalDate date);
     Optional<Completion> findByHabitIdAndDate(Long habitId, LocalDate date);
-    
+    List<Completion> findByCompletionDate(LocalDate date);
     List<Completion> findByHabitIdOrderByCompletionDateDesc(Long habitId);
 }
