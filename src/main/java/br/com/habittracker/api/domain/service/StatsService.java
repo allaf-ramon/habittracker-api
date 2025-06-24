@@ -7,6 +7,8 @@ import br.com.habittracker.api.domain.port.out.CompletionRepositoryPort;
 import br.com.habittracker.api.domain.port.out.HabitRepositoryPort;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class StatsService implements GetHabitStatsUseCase {
@@ -27,8 +29,9 @@ public class StatsService implements GetHabitStatsUseCase {
 
         List<Completion> completions = completionRepositoryPort.findByHabitIdOrderByCompletionDateDesc(habitId);
         int currentStreak = calculateCurrentStreak(completions);
+        int longestStreak = calculateLongestStreak(completions);
         
-        return new HabitStats(currentStreak);
+        return new HabitStats(currentStreak, longestStreak);
     }
 
     private int calculateCurrentStreak(List<Completion> completions) {
@@ -63,5 +66,37 @@ public class StatsService implements GetHabitStatsUseCase {
         }
 
         return streak;
+    }
+
+    private int calculateLongestStreak(List<Completion> completionsDesc) {
+        if (completionsDesc.isEmpty()) {
+            return 0;
+        }
+
+        // Invertemos a lista para iterar do mais antigo para o mais recente
+        List<Completion> completionsAsc = new ArrayList<>(completionsDesc);
+        Collections.reverse(completionsAsc);
+
+        int longestStreak = 0;
+        int currentStreak = 0;
+        LocalDate lastDate = null;
+
+        for (Completion completion : completionsAsc) {
+            LocalDate currentDate = completion.getCompletionDate();
+            if (lastDate != null && currentDate.equals(lastDate.plusDays(1))) {
+                // Dia consecutivo, incrementa a sequência atual
+                currentStreak++;
+            } else {
+                // Dia não consecutivo (ou o primeiro da lista), reinicia a sequência
+                currentStreak = 1;
+            }
+
+            if (currentStreak > longestStreak) {
+                longestStreak = currentStreak;
+            }
+
+            lastDate = currentDate;
+        }
+        return longestStreak;
     }
 }
