@@ -117,6 +117,7 @@ public class HabitController {
         // Simples mapeamento manual por enquanto
         HabitStatsResponseDTO response = new HabitStatsResponseDTO();
         response.setCurrentStreak(stats.getCurrentStreak());
+        response.setLongestStreak(stats.getLongestStreak());
 
         return ResponseEntity.ok(response);
     }
