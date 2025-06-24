@@ -3,11 +3,12 @@ package br.com.habittracker.api.domain.model;
 public class HabitStats {
 
     private int currentStreak;
-    // Futuramente: private int longestStreak;
+    private int longestStreak;
     // Futuramente: private double successRate;
 
-    public HabitStats(int currentStreak) {
+    public HabitStats(int currentStreak, int longestStreak) {
         this.currentStreak = currentStreak;
+        this.longestStreak = longestStreak;
     }
 
     public int getCurrentStreak() {
@@ -16,5 +17,13 @@ public class HabitStats {
 
     public void setCurrentStreak(int currentStreak) {
         this.currentStreak = currentStreak;
+    }
+
+    public int getLongestStreak() {
+        return longestStreak;
+    }
+
+    public void setLongestStreak(int longestStreak) {
+        this.longestStreak = longestStreak;
     }
 }
