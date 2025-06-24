@@ -169,11 +169,12 @@ class HabitControllerTest {
     @Test
     void whenGetStatsForExistingHabit_thenReturns200Ok() throws Exception {
         // Arrange
-        when(getHabitStatsUseCase.getStats(1L)).thenReturn(new br.com.habittracker.api.domain.model.HabitStats(5));
+        when(getHabitStatsUseCase.getStats(1L)).thenReturn(new br.com.habittracker.api.domain.model.HabitStats(5, 5));
 
         // Act & Assert
         mockMvc.perform(get("/v1/habits/1/stats"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.currentStreak").value(5));
+                .andExpect(jsonPath("$.currentStreak").value(5))
+                .andExpect(jsonPath("$.longestStreak").value(5));
     }
 }
