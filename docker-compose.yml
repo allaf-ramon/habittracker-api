@@ -27,6 +27,8 @@ services:
     restart: unless-stopped
 
   habittracker-api:
+    # Define um nome explícito para a imagem que será construída.
+    image: habittracker-api:latest
     # Constrói a imagem a partir do Dockerfile no diretório atual.
     build: .
     container_name: habittracker-api
