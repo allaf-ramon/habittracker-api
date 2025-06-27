@@ -2,6 +2,7 @@ package br.com.habittracker.api.domain.service;
 
 import br.com.habittracker.api.domain.model.Habit;
 import br.com.habittracker.api.domain.port.in.*;
+import br.com.habittracker.api.domain.port.out.CompletionRepositoryPort;
 import br.com.habittracker.api.domain.port.out.HabitRepositoryPort;
 
 import java.time.LocalDate;
@@ -16,10 +17,13 @@ public class HabitService
         implements CreateHabitUseCase, FindHabitByIdUseCase, FindAllHabitsUseCase,
         UpdateHabitUseCase, DeleteHabitUseCase {
     private final HabitRepositoryPort habitRepositoryPort;
+    private final CompletionRepositoryPort completionRepositoryPort;
 
     // A implementação do repositório será injetada aqui (veremos isso depois)
-    public HabitService(HabitRepositoryPort habitRepositoryPort) {
+    public HabitService(HabitRepositoryPort habitRepositoryPort,
+                        CompletionRepositoryPort completionRepositoryPort) {
         this.habitRepositoryPort = habitRepositoryPort;
+        this.completionRepositoryPort = completionRepositoryPort;
     }
 
     @Override
@@ -66,11 +70,14 @@ public class HabitService
 
     @Override
     public boolean deleteHabit(Long id) {
-        // Verifica se o hábito existe
-        if (habitRepositoryPort.findById(id).isPresent()) {
+        return habitRepositoryPort.findById(id).map(habit -> {
+            // 1. Apaga os filhos (conclusões) primeiro
+            completionRepositoryPort.deleteAllByHabitId(id);
+
+            // 2. Depois, apaga o pai (hábito)
             habitRepositoryPort.deleteById(id);
+
             return true; // Sucesso
-        }
-        return false; // Hábito não encontrado
+        }).orElse(false); // Hábito não encontrado
     }
 }

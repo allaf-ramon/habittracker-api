@@ -12,4 +12,5 @@ public interface CompletionRepositoryPort {
     Optional<Completion> findByHabitIdAndDate(Long habitId, LocalDate date);
     List<Completion> findByCompletionDate(LocalDate date);
     List<Completion> findByHabitIdOrderByCompletionDateDesc(Long habitId);
+    void deleteAllByHabitId(Long habitId);
 }

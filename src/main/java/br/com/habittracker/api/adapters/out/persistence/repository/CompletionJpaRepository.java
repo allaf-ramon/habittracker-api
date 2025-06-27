@@ -18,4 +18,7 @@ public interface CompletionJpaRepository extends JpaRepository<CompletionEntity,
 
     List<CompletionEntity> findByCompletionDate(LocalDate completionDate);
     List<CompletionEntity> findByHabitIdOrderByCompletionDateDesc(Long habitId);
+
+    @Transactional
+    void deleteAllByHabitId(Long habitId);
 }

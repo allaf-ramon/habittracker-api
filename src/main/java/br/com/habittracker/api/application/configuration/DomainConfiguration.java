@@ -12,8 +12,9 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class DomainConfiguration {
     @Bean
-    public HabitService habitService(HabitRepositoryPort habitRepositoryPort) {
-        return new HabitService(habitRepositoryPort);
+    public HabitService habitService(HabitRepositoryPort habitRepositoryPort,
+                                     CompletionRepositoryPort completionRepositoryPort) {
+        return new HabitService(habitRepositoryPort,completionRepositoryPort);
     }
     @Bean
     public CompletionService completionService(CompletionRepositoryPort completionRepositoryPort,

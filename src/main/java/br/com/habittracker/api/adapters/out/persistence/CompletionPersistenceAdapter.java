@@ -55,4 +55,9 @@ public class CompletionPersistenceAdapter implements CompletionRepositoryPort {
                 .map(mapper::toDomain)
                 .collect(Collectors.toList());
     }
+
+    @Override
+    public void deleteAllByHabitId(Long habitId) {
+        completionJpaRepository.deleteAllByHabitId(habitId);
+    }
 }
