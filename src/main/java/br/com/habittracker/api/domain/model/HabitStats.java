@@ -16,16 +16,8 @@ public class HabitStats {
         return currentStreak;
     }
 
-    public void setCurrentStreak(int currentStreak) {
-        this.currentStreak = currentStreak;
-    }
-
     public int getLongestStreak() {
         return longestStreak;
-    }
-
-    public void setLongestStreak(int longestStreak) {
-        this.longestStreak = longestStreak;
     }
 
     public double getSuccessRate() {
