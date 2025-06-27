@@ -4,11 +4,12 @@ public class HabitStats {
 
     private int currentStreak;
     private int longestStreak;
-    // Futuramente: private double successRate;
+    private double successRate;
 
-    public HabitStats(int currentStreak, int longestStreak) {
+    public HabitStats(int currentStreak, int longestStreak, double successRate) {
         this.currentStreak = currentStreak;
         this.longestStreak = longestStreak;
+        this.successRate = successRate;
     }
 
     public int getCurrentStreak() {
@@ -25,5 +26,9 @@ public class HabitStats {
 
     public void setLongestStreak(int longestStreak) {
         this.longestStreak = longestStreak;
+    }
+
+    public double getSuccessRate() {
+        return successRate;
     }
 }
