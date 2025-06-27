@@ -114,10 +114,10 @@ public class HabitController {
     public ResponseEntity<HabitStatsResponseDTO> getHabitStats(@PathVariable Long id) {
         HabitStats stats = getHabitStatsUseCase.getStats(id);
         
-        // Simples mapeamento manual por enquanto
         HabitStatsResponseDTO response = new HabitStatsResponseDTO();
         response.setCurrentStreak(stats.getCurrentStreak());
         response.setLongestStreak(stats.getLongestStreak());
+        response.setSuccessRate(stats.getSuccessRate());
 
         return ResponseEntity.ok(response);
     }
