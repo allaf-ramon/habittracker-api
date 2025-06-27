@@ -1,12 +1,14 @@
 package br.com.habittracker.api.domain.service;
 
 import br.com.habittracker.api.domain.model.Completion;
+import br.com.habittracker.api.domain.model.Habit;
 import br.com.habittracker.api.domain.model.HabitStats;
 import br.com.habittracker.api.domain.port.in.GetHabitStatsUseCase;
 import br.com.habittracker.api.domain.port.out.CompletionRepositoryPort;
 import br.com.habittracker.api.domain.port.out.HabitRepositoryPort;
 
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -24,14 +26,15 @@ public class StatsService implements GetHabitStatsUseCase {
     @Override
     public HabitStats getStats(Long habitId) {
         // Valida se o hábito existe
-        habitRepositoryPort.findById(habitId)
+        Habit habit = habitRepositoryPort.findById(habitId)
                 .orElseThrow(() -> new IllegalArgumentException("Hábito não encontrado."));
 
         List<Completion> completions = completionRepositoryPort.findByHabitIdOrderByCompletionDateDesc(habitId);
         int currentStreak = calculateCurrentStreak(completions);
         int longestStreak = calculateLongestStreak(completions);
-        
-        return new HabitStats(currentStreak, longestStreak);
+        double successRate = calculateSuccessRate(habit, completions);
+
+        return new HabitStats(currentStreak, longestStreak, successRate);
     }
 
     private int calculateCurrentStreak(List<Completion> completions) {
@@ -48,10 +51,10 @@ public class StatsService implements GetHabitStatsUseCase {
         if (!lastCompletionDate.equals(today) && !lastCompletionDate.equals(today.minusDays(1))) {
             return 0;
         }
-        
+
         // Se a última conclusão não foi hoje, começamos a contar a partir de ontem.
         if (!lastCompletionDate.equals(today)) {
-             expectedDate = today.minusDays(1);
+            expectedDate = today.minusDays(1);
         }
 
         // Itera sobre as conclusões para contar os dias consecutivos
@@ -98,5 +101,20 @@ public class StatsService implements GetHabitStatsUseCase {
             lastDate = currentDate;
         }
         return longestStreak;
+    }
+
+    private double calculateSuccessRate(Habit habit, List<Completion> completions) {
+        if (completions.isEmpty()) {
+            return 0.0;
+        }
+
+        long daysSinceCreation = ChronoUnit.DAYS.between(habit.getCreationDate(), LocalDate.now()) + 1;
+
+        // Caso de borda: se o hábito foi criado no futuro (não deveria acontecer)
+        if (daysSinceCreation <= 0) {
+            return 0.0;
+        }
+
+        return ((double) completions.size() / daysSinceCreation) * 100.0;
     }
 }
