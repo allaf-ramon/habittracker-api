@@ -34,7 +34,7 @@ Para executar o projeto, você precisará ter o Docker e o Docker Compose instal
 
 1. Clone o repositório:
    ```bash
-   git clone https://github.com/seu-usuario/habittracker-api.git
+   git clone https://github.com/allaf-ramon/habittracker-api.git
    ```
 2. Navegue até o diretório do projeto:
    ```bash
