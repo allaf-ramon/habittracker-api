@@ -1,6 +1,7 @@
 package br.com.habittracker.api.domain.service;
 
 import br.com.habittracker.api.domain.model.Habit;
+import br.com.habittracker.api.domain.port.out.CompletionRepositoryPort;
 import br.com.habittracker.api.domain.port.out.HabitRepositoryPort;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -20,6 +21,9 @@ import static org.mockito.Mockito.*;
 class HabitServiceTest {
     @Mock
     private HabitRepositoryPort habitRepositoryPort;
+
+    @Mock
+    private CompletionRepositoryPort completionRepositoryPort;
 
     @InjectMocks
     private HabitService habitService;
